@@ -164,7 +164,7 @@ var collisionDetect = function(enemy, index){
             newMessage(enemy.title + ' ' + enemy.power + ' defeated!');
             if(game.map[enemy.y][enemy.x][0].title == 'slug')
                 game.map[enemy.y][enemy.x].splice(0,1);
-            game.enemies = game.enemies.splice(index, 1);
+            game.enemies.splice(index, 1);
             nothing = false;
         }else{
             newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
@@ -174,7 +174,7 @@ var collisionDetect = function(enemy, index){
 };
 
 var newMessage = function(str){
-    game.messages = game.messages.splice(-1, 1);
+    game.messages.splice(-1, 1);
     game.messages.unshift(str);
 };
 
@@ -208,7 +208,7 @@ var game = {};
 
 $( document ).ready(function() {
     document.onkeydown = keyPressed;
-    game.messages=['','','',''];
+    game.messages=['1','2','3','4'];
     game.items = [];
     game.level = 1;
     game.map = createNewMap();
