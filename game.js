@@ -120,16 +120,21 @@ var getMapView = function(source_map, enemies, items, hero){
         });
         mapView[index] = string;
     });
-    outputmapData(mapView);
+    outputMapData(mapView);
 };
 
-var outputmapData = function(mapView){
+var outputMapData = function(mapView){
     var htmlString = '';
+    var messageString = '';
     _.each(mapView, function(row){
         htmlString += '<span>'+ row +'</span><br>';
     });
+    _.each(game.messages, function(str){
+        messageString += '<span>'+ str +'</span><br>';
+    });
     console.log(htmlString);
     $('#game-screen').html(htmlString);
+    $('#messages').html(messageString);
 };
 
 var moveObject = function(obj, direction){
@@ -151,13 +156,36 @@ var moveObject = function(obj, direction){
     }
 };
 
-var oneGameStep = function(key_code){
+var collisionDetect = function(enemy, index){
+    var nothing = true;
+    if(game.hero.x == enemy.x && game.hero.y == enemy.y){
+        var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
+        if(power >= enemy.power){
+            newMessage(enemy.title + ' ' + enemy.power + ' defeated!');
+            if(game.map[enemy.y][enemy.x][0].title == 'slug')
+                game.map[enemy.y][enemy.x].splice(0,1);
+            game.enemies = game.enemies.splice(index, 1);
+            nothing = false;
+        }else{
+            newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
+        }
+    }
+    return nothing;
+};
 
+var newMessage = function(str){
+    game.messages = game.messages.splice(-1, 1);
+    game.messages.unshift(str);
+};
+
+var oneGameStep = function(key_code){
     moveObject(game.hero, key_code);
 
-    _.each(game.enemies, function(enemy){
-        //Проврить на столкновение с игроком
-        moveObject(enemy, _.random(37, 40));
+    _.each(game.enemies, function(enemy, index){
+        if(collisionDetect(enemy, index)){
+            moveObject(enemy, _.random(37, 40));
+            collisionDetect(enemy, index);
+        }
     });
 
     getMapView(game.map, game.enemies, game.items, game.hero);
@@ -196,7 +224,7 @@ $( document ).ready(function() {
         legs: 0,
         boots: 0,
         shield:0,
-        sword: 0
+        sword: 1
     };
     getMapView(game.map, game.enemies, game.items, game.hero);
 });
