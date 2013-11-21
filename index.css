@@ -1,0 +1,11 @@
+div.black-screen {
+    font-family: 'PT Mono', sans-serif;
+    background-color: black;
+    color: white;
+    line-height: 60%;
+    font-size: 40px;
+}
+div.hud {
+    line-height: 100%;
+    font-size: 20px;
+}
