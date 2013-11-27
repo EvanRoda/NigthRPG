@@ -156,8 +156,7 @@ var moveObject = function(obj, direction){
     }
 };
 
-var collisionDetect = function(enemy, index){
-    var nothing = true;
+var enemyCollisionDetect = function(enemy, index){
     if(game.hero.x == enemy.x && game.hero.y == enemy.y){
         var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
         if(power >= enemy.power){
@@ -165,12 +164,16 @@ var collisionDetect = function(enemy, index){
             if(game.map[enemy.y][enemy.x][0].title == 'slug')
                 game.map[enemy.y][enemy.x].splice(0,1);
             game.enemies.splice(index, 1);
-            nothing = false;
         }else{
             newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
         }
     }
-    return nothing;
+};
+
+var heroCollisionDetect = function(){
+    _.each(game.map[game.hero.y][game.hero.x], function(layer){
+        if(true){}
+    });
 };
 
 var newMessage = function(str){
@@ -182,9 +185,9 @@ var oneGameStep = function(key_code){
     moveObject(game.hero, key_code);
 
     _.each(game.enemies, function(enemy, index){
-        if(collisionDetect(enemy, index)){
+        if(heroCollisionDetect()){
             moveObject(enemy, _.random(37, 40));
-            collisionDetect(enemy, index);
+            enemyCollisionDetect(enemy, index);
         }
     });
 
