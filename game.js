@@ -124,7 +124,7 @@ var getMapView = function(source_map, enemies, items, hero){
 };
 
 var outputMapData = function(mapView){
-    var htmlString = '';
+    var htmlString = '<br>';
     var messageString = '';
     var actionString = '';
     var heroEquip = '<br><span>HERO '+ game.hero.power +'</span><br><br>' +
@@ -243,7 +243,17 @@ var oneGameStep = function(key_code){
             }
         }
     }else if(key_code == 32){
-        //stay
+        if(!game.enemies.length){
+            game.messages=['','','',''];
+            game.items = [];
+            game.level += 1;
+            game.map = createNewMap();
+            game.enemies = createEnemies(game.level, game.map);
+            game.items[0] = createItems(game.map, game.level);
+            game.hero.x = 7;
+            game.hero.y = 7;
+            getMapView(game.map, game.enemies, game.items, game.hero);
+        }
     }else{
         moveObject(game.hero, key_code);
         if(_.findWhere(game.enemies, {x: game.hero.x, y: game.hero.y})){
@@ -275,7 +285,7 @@ var game = {};
 
 $( document ).ready(function() {
     document.onkeydown = keyPressed;
-    game.messages=['1','2','3','4'];
+    game.messages=['','','',''];
     game.items = [];
     game.level = 1;
     game.score = 0;
