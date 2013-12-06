@@ -132,9 +132,17 @@ var outputMapData = function(mapView){
     _.each(game.messages, function(str){
         messageString += '<span>'+ str +'</span><br>';
     });
-    console.log(htmlString);
+    var heroEquip = '<br><span>HERO '+ game.hero.power +'</span><br><br>' +
+        '<span>'+'^ helm '+ game.hero.helm +'</span><br>'+
+        '<span>Y armor '+ game.hero.armor +'</span><br>'+
+        '<span>П legs '+ game.hero.legs +'</span><br>'+
+        '<span>" boots '+ game.hero.boots +'</span><br>'+
+        '<span>/ sword '+ game.hero.sword +'</span><br>'+
+        '<span>* shield '+ game.hero.shield +'</span>';
+    console.log(heroEquip);
     $('#game-screen').html(htmlString);
     $('#messages').html(messageString);
+    $('#hero').html(heroEquip);
 };
 
 var moveObject = function(obj, direction){
