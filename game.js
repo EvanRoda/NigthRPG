@@ -161,19 +161,28 @@ var enemyCollisionDetect = function(enemy, index){
         var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
         if(power >= enemy.power){
             newMessage(enemy.title + ' ' + enemy.power + ' defeated!');
-            if(game.map[enemy.y][enemy.x][0].title == 'slug')
-                game.map[enemy.y][enemy.x].splice(0,1);
             game.enemies.splice(index, 1);
         }else{
-            newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
+
         }
     }
 };
 
 var heroCollisionDetect = function(){
+    var total_enemy_power = 0;
+    var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
     _.each(game.map[game.hero.y][game.hero.x], function(layer){
-        if(true){}
+        total_enemy_power += layer.title == 'slug' ? layer.power : 0;
     });
+    if(power >= total_enemy_power){
+        _.each(game.map[game.hero.y][game.hero.x], function(layer, l_i){
+            if(layer.title == 'slug'){
+                //TODO Найти enemy в массиве и удалить
+            }
+        });
+    }else{
+        newMessage('You are defeated by enemies');
+    }
 };
 
 var newMessage = function(str){
@@ -183,12 +192,10 @@ var newMessage = function(str){
 
 var oneGameStep = function(key_code){
     moveObject(game.hero, key_code);
-
+    heroCollisionDetect();
     _.each(game.enemies, function(enemy, index){
-        if(heroCollisionDetect()){
-            moveObject(enemy, _.random(37, 40));
-            enemyCollisionDetect(enemy, index);
-        }
+        moveObject(enemy, _.random(37, 40));
+        enemyCollisionDetect(enemy, index);
     });
 
     getMapView(game.map, game.enemies, game.items, game.hero);
