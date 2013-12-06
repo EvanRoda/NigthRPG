@@ -126,23 +126,40 @@ var getMapView = function(source_map, enemies, items, hero){
 var outputMapData = function(mapView){
     var htmlString = '';
     var messageString = '';
+    var actionString = '';
+    var heroEquip = '<br><span>HERO '+ game.hero.power +'</span><br><br>' +
+        '<span>^ helm '+ game.hero.helm +'</span><br>'+
+        '<span>Y armor '+ game.hero.armor +'</span><br>'+
+        '<span>П legs '+ game.hero.legs +'</span><br>'+
+        '<span>" boots '+ game.hero.boots +'</span><br>'+
+        '<span>/ sword '+ game.hero.sword +'</span><br>'+
+        '<span>* shield '+ game.hero.shield +'</span>';
+    var cell = game.map[game.hero.y][game.hero.x][1];
+
     _.each(mapView, function(row){
         htmlString += '<span>'+ row +'</span><br>';
     });
     _.each(game.messages, function(str){
         messageString += '<span>'+ str +'</span><br>';
     });
-    var heroEquip = '<br><span>HERO '+ game.hero.power +'</span><br><br>' +
-        '<span>'+'^ helm '+ game.hero.helm +'</span><br>'+
-        '<span>Y armor '+ game.hero.armor +'</span><br>'+
-        '<span>П legs '+ game.hero.legs +'</span><br>'+
-        '<span>" boots '+ game.hero.boots +'</span><br>'+
-        '<span>/ sword '+ game.hero.sword +'</span><br>'+
-        '<span>* shield '+ game.hero.shield +'</span>';
+    console.log(cell);
+    if(cell.title == 'helm' || cell.title == 'armor' || cell.title == 'legs' || cell.title == 'boots'|| cell.title == 'sword' || cell.title == 'shield'){
+        if(cell.power > game.hero[cell.title]){
+            actionString = '[e] - take ' + cell.title + ' ' + cell.power;
+        }else{
+            actionString = '[e] - destroy ' + cell.title + ' ' + cell.power;
+        }
+    }else if(cell.title == 'poison'){
+        actionString = '[e] - drink poison';
+    }else{
+        actionString = 'Nothing here';
+    }
+
     console.log(heroEquip);
     $('#game-screen').html(htmlString);
     $('#messages').html(messageString);
     $('#hero').html(heroEquip);
+    $('#action').html('<br><br><br>' + actionString);
 };
 
 var moveObject = function(obj, direction){
@@ -170,6 +187,7 @@ var enemyCollisionDetect = function(enemy, index){
         if(power >= enemy.power){
             newMessage(enemy.title + ' ' + enemy.power + ' defeated!');
             game.enemies.splice(index, 1);
+            game.items.push(createItem(game.hero.x, game.hero.y, game.level));
         }else{
             newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
         }
@@ -189,6 +207,7 @@ var heroCollisionDetect = function(){
         game.map[game.hero.y][game.hero.x] = _.reject(game.map[game.hero.y][game.hero.x], function(layer){
             return layer.title == 'slug';
         });
+        game.items.push(createItem(game.hero.x, game.hero.y, game.level));
         newMessage('win');
     }else{
         newMessage('You are defeated by enemies');
@@ -201,9 +220,35 @@ var newMessage = function(str){
 };
 
 var oneGameStep = function(key_code){
-    moveObject(game.hero, key_code);
-    if(game.map[game.hero.y][game.hero.x][0].title == 'slug'){
-        heroCollisionDetect();
+    var cell = game.map[game.hero.y][game.hero.x][1];
+    if(key_code == 69){
+        if(cell.title == 'helm' || cell.title == 'armor' || cell.title == 'legs' || cell.title == 'boots'|| cell.title == 'sword' || cell.title == 'shield'){
+            game.hero[cell.title] = cell.power;
+            if(cell.power > game.hero[cell.title]){
+                game.score += game.hero[cell.title];
+                game.hero[cell.title] = cell.power;
+                game.items = _.reject(game.items, function(item){
+                    return (item.x == cell.x && item.y == cell.y && item.title == cell.title && item.power == cell.power);
+                });
+            }else{
+                game.score += cell.power;
+                game.items = _.reject(game.items, function(item){
+                    return (item.x == cell.x && item.y == cell.y && item.title == cell.title && item.power == cell.power);
+                });
+            }
+        }else if(cell.title == 'poison'){
+            game.hero.power += cell.power;
+            game.items = _.reject(game.items, function(item){
+                return (item.x == cell.x && item.y == cell.y && item.title == cell.title && item.power == cell.power);
+            });
+        }
+    }else if(key_code == 32){
+        //stay
+    }else{
+        moveObject(game.hero, key_code);
+        if(game.map[game.hero.y][game.hero.x][0].title == 'slug'){
+            heroCollisionDetect();
+        }
     }
     _.each(game.enemies, function(enemy, index){
         moveObject(enemy, _.random(37, 40));
@@ -233,6 +278,7 @@ $( document ).ready(function() {
     game.messages=['1','2','3','4'];
     game.items = [];
     game.level = 1;
+    game.score = 0;
     game.map = createNewMap();
     game.enemies = createEnemies(game.level, game.map);
     game.items[0] = createItems(game.map, game.level);
