@@ -88,6 +88,14 @@ var createItem = function(x, y, level){
     return item;
 };
 
+
+/**
+ * Функция создания
+ *
+ * @param map
+ * @param level
+ * @returns {{}}
+ */
 var createItems = function(map, level){
     var x = 0;
     var y = 0;
@@ -102,12 +110,25 @@ var createItems = function(map, level){
     return item;
 };
 
+
+/**
+ * Функция создания нового предмета с некоторым шансом
+ */
 var dropItem = function(){
     if(!(_.random(0,2))){
         game.items.push(createItem(game.hero.x, game.hero.y, game.level));
     }
 };
 
+
+/**
+ * Функция подготовки вывода карты (размещает объекты в массиве карты)
+ *
+ * @param source_map //СЫрая карта
+ * @param enemies //Массив врагов
+ * @param items //Массив вещей
+ * @param hero //объект герой
+ */
 var getMapView = function(source_map, enemies, items, hero){
     var map = $.extend(true, [], source_map);
     var mapView = [];
@@ -129,6 +150,12 @@ var getMapView = function(source_map, enemies, items, hero){
     outputMapData(mapView);
 };
 
+
+/**
+ *Вывод карты и всех текстов на страницу
+ *
+ * @param mapView //Подготовленный массив карты со всеми объектами
+ */
 var outputMapData = function(mapView){
     var htmlString = '<br>';
     var messageString = '';
@@ -171,6 +198,13 @@ var outputMapData = function(mapView){
     $('#action').html('<br><br><br>' + actionString);
 };
 
+
+/**
+ * Функция перемещающая объект на один шаг
+ *
+ * @param obj //объект для перемещения (может быть герой или враг)
+ * @param direction //Код нажатой клавиши (одна из стрелочек) она же код направления движения
+ */
 var moveObject = function(obj, direction){
     var x = obj.x;
     var y = obj.y;
@@ -189,6 +223,13 @@ var moveObject = function(obj, direction){
     }
 };
 
+
+/**
+ * Обработка столкновения врага с героем
+ *
+ * @param enemy //Объект "враг" для которого выполняется обработка
+ * @param index //Индекс объекта "враг" в массиве врагов
+ */
 var enemyCollisionDetect = function(enemy, index){
     if(game.hero.x == enemy.x && game.hero.y == enemy.y){
         var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
@@ -202,6 +243,10 @@ var enemyCollisionDetect = function(enemy, index){
     }
 };
 
+
+/**
+ * Обработка столкновения героя с врагом(врагами)
+ */
 var heroCollisionDetect = function(){
     var total_enemy_power = 0;
     var power = game.hero.power + game.hero.helm + game.hero.armor + game.hero.legs + game.hero.boots + game.hero.sword + game.hero.shield;
@@ -219,11 +264,23 @@ var heroCollisionDetect = function(){
     }
 };
 
+
+/**
+ * Функция добавляющая сообщение в массив messages
+ *
+ * @param str //Текст сообщения
+ */
 var newMessage = function(str){
     game.messages.splice(-1, 1);
     game.messages.unshift(str);
 };
 
+
+/**
+ * Функция выполняющая один цикл игры
+ *
+ * @param key_code //Код нажатой клавиши
+ */
 var oneGameStep = function(key_code){
     var cell = _.findWhere(game.items, {x: game.hero.x, y: game.hero.y});
     if(key_code == 69){
@@ -274,6 +331,11 @@ var oneGameStep = function(key_code){
     getMapView(game.map, game.enemies, game.items, game.hero);
 };
 
+/**
+ * Обработка начатия клавиш
+ *
+ * @param e //Код нажатой клавиши
+ */
 var keyPressed = function(e) {
     var key_code;
     if (e) {
