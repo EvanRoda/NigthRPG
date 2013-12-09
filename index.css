@@ -13,3 +13,7 @@ div.hud {
 div.margined-top {
     margin-top: 50px;
 }
+
+div.text-right{
+    text-align: right;
+}

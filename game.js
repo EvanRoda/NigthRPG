@@ -102,6 +102,12 @@ var createItems = function(map, level){
     return item;
 };
 
+var dropItem = function(){
+    if(!(_.random(0,2))){
+        game.items.push(createItem(game.hero.x, game.hero.y, game.level));
+    }
+};
+
 var getMapView = function(source_map, enemies, items, hero){
     var map = $.extend(true, [], source_map);
     var mapView = [];
@@ -159,6 +165,7 @@ var outputMapData = function(mapView){
 
     console.log(heroEquip);
     $('#game-screen').html(htmlString);
+    $('#score').html('Score: ' + game.score);
     $('#messages').html(messageString);
     $('#hero').html(heroEquip);
     $('#action').html('<br><br><br>' + actionString);
@@ -188,7 +195,7 @@ var enemyCollisionDetect = function(enemy, index){
         if(power >= enemy.power){
             newMessage(enemy.title + ' ' + enemy.power + ' defeated!');
             game.enemies.splice(index, 1);
-            game.items.push(createItem(game.hero.x, game.hero.y, game.level));
+            dropItem();
         }else{
             newMessage('You are defeated by ' + enemy.title + ' ' + enemy.power);
         }
@@ -205,7 +212,7 @@ var heroCollisionDetect = function(){
         game.enemies = _.reject(game.enemies, function(enemy){
             return (enemy.x == game.hero.x && enemy.y == game.hero.y);
         });
-        game.items.push(createItem(game.hero.x, game.hero.y, game.level));
+        dropItem();
         newMessage('win');
     }else{
         newMessage('You are defeated by enemies');
@@ -222,7 +229,6 @@ var oneGameStep = function(key_code){
     if(key_code == 69){
         if(cell){
             if(cell.title == 'helm' || cell.title == 'armor' || cell.title == 'legs' || cell.title == 'boots'|| cell.title == 'sword' || cell.title == 'shield'){
-                game.hero[cell.title] = cell.power;
                 if(cell.power > game.hero[cell.title]){
                     game.score += game.hero[cell.title];
                     game.hero[cell.title] = cell.power;
